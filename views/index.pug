@@ -1,0 +1,97 @@
+extends layout
+
+block headContent
+	title Bitcoin Explorer
+	
+block content
+	if (getblockchaininfo == null)
+		div.alert.alert-danger
+			h5.mb-3 Unable to get basic blockchain data
+			ul
+				li
+					p
+						b If you just started your node, it may still be initializing.
+						div At startup, bitcoind verifies its block index before making itself available to serve data. The amount of time the verification process takes depends largely on the speed of the machine bitcoind is running on. If you're running bitcoind on low powered, inexpensive hardware, don't be surprised if this process takes a long time.
+				li
+					p
+						b If you believe your bitcoind node is already initialized...
+						div Check your RPC connection info and/or check this application's error log for possible hints about the cause of this issue.
+	else
+
+		+dismissableInfoAlert("homepageWelcomeBannerDismissed")
+			.clearfix
+				.float-start
+					<center> <small><u>NationCoin -Blockchain Explorer and Tools! </small> </u></center>
+				.float-start
+					if (config.demoSite)
+						- var networkNameMap = {"main": "Mainnet", "test": "Testnet", "signet": "Signet"};
+						span.badge.bg-primary.mb-1.ms-0.ms-md-3.mt-1(title= 'Public web based blockchain simple explorer' , data-bs-toggle="tooltip", data-bs-html="true")
+							span.me-2 #{networkNameMap[global.activeBlockchain]} NationCoin - Chain Explorer
+							i.fas.fa-sticky-note
+			
+
+			
+			.mb-3
+				- var features = ["Bitcoin Tools!", "Secured!", "LightSpeed Network"];
+
+				each feature in features
+					span.badge.bg-light.text-dark.border.me-2
+						span.me-2 #{feature}
+						i.fas.fa-check
+			
+			.mt-4.mb-2
+				if (global.sourcecodeProjectMetadata)
+					a.btn.btn-primary.mb-2.mb-md-1.me-3(href="https://wa.me/+2349067337189/", title="Meet Dev?", data-bs-toggle="tooltip", data-bs-placement="bottom")
+						i.fab.fa-github.fa-lg.me-2
+						| Investor_Nat
+
+				a.btn.btn-primary.mb-2.mb-md-1.me-3(href="https://natexchange.com", target="_blank", title="NATEXCANGE", data-bs-toggle="tooltip", data-bs-placement="bottom")
+					i.fas.fa-heart.text-danger.fa-lg.me-2
+					| Buy And Sell Crypto Fast!
+
+				a.btn.btn-primary.mb-2.mb-md-1(href="https://twitter.com/investor_nat", target="_blank", title="Follow @BitcoinExplorer on Twitter", data-bs-toggle="tooltip", data-bs-placement="bottom")
+					i.fab.fa-twitter.text-twitter.fa-lg.me-2
+					| @investor_nat
+					
+
+				
+
+		if (getblockchaininfo.initialblockdownload && !["regtest", "signet"].includes(global.activeBlockchain))
+			div.alert.alert-warning.shadow-sm.border.mb-3
+				div.fw-bold.mb-1 Initial Block Download (IBD) - In Progress...
+
+				div.mb-1 Your node is currently downloading and verifying blockchain data. Until the process is finished, some features of this tool will be unusable and/or unreliable.
+
+				span.fw-bold Progress: 
+				span.font-monospace #{new Decimal(getblockchaininfo.verificationprogress).times(100).toDP(3)}%
+
+
+		
+		include includes/index-network-summary.pug
+		
+		
+		
+		if (latestBlocks)
+			+contentSection("Latest Blocks")
+				- var blocks = latestBlocks;
+				- var blockOffset = 0;
+				- var hideBlockIndex = false;
+
+				include includes/blocks-list.pug
+
+				if (blocks.length % 2 == 1)
+					hr
+				else
+					.mb-2
+
+				.text-center.pt-1
+					a.btn.btn-primary.btn-sm(href="./blocks")
+						i.fas.fa-cubes.me-2
+						| Browse Blocks &raquo;
+							
+
+		+contentSection("Tools")
+			include includes/tools-card.pug
+				.mb-2 NATIONCOIN - WEB BITCOIN-BLOCKCHAIN EXPLORER DEV BY <u>NAT-D-GREAT!</u/>
+
+		
